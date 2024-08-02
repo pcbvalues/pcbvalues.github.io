@@ -65,6 +65,9 @@ async function handleEndpoint(endpoint: string | null | undefined, body: Buffer 
         case "/script.js":
             return [await serveFile("script.js"), Ctype.JS, 200, false];
 
+        case "/common.js":
+                return [await serveFile("common.js"), Ctype.JS, 200, false];
+
         case "/style.css":
             return [await serveFile("style.css"), Ctype.CSS, 200, false];
 

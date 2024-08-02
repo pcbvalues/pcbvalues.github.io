@@ -1,3 +1,4 @@
+import { parseFlags, serializeFlags } from "./common.js";
 const jsonInput = document.getElementById("json-input");
 const submitButton = document.getElementById("submit-button");
 const listButton = document.getElementById("list-button");
@@ -7,11 +8,16 @@ const clearCheckbox = document.getElementById("clear-checkbox");
 const dialog = document.getElementById("dialog-popup");
 const dialogContents = document.getElementById("dialog-content");
 const dialogClose = document.getElementById("dialog-close");
+globalThis.activeUser = null;
 class JsonReq {
     static async request(endpoint, params, options = {}) {
+        const abortController = new AbortController();
+        const timeout = setTimeout(() => abortController.abort(), 5000);
+        options.signal = abortController.signal;
         const urlParams = new URLSearchParams(params);
         const finalUrl = `/${endpoint}?${urlParams}`;
         const resp = await fetch(finalUrl, options);
+        clearTimeout(timeout);
         const ctype = resp.headers.get("Content-Type");
         if (!ctype || !ctype.startsWith("application/json")) {
             throw new Error(`Invalid content type, expected application/json, got ${ctype}`);
@@ -96,6 +102,48 @@ function confirmDialog(text) {
         });
     });
 }
+function flagsDialog(user, flagBitField) {
+    const checkboxParent = document.createElement("div");
+    const parsedFlags = parseFlags(flagBitField);
+    const header = document.createElement("h2");
+    header.innerText = `Editing flags for user: ${user}`;
+    checkboxParent.append(header);
+    for (const [key, val] of Object.entries(parsedFlags)) {
+        const checkBoxDiv = document.createElement("div");
+        checkBoxDiv.classList.add("flag-container");
+        const checkBoxLabel = document.createElement("span");
+        checkBoxLabel.classList.add("flag-label");
+        checkBoxLabel.textContent = key;
+        const checkBox = document.createElement("input");
+        checkBox.type = "checkbox";
+        checkBox.classList.add("flag-checkbox");
+        checkBox.checked = val;
+        checkBoxDiv.append(checkBoxLabel, checkBox);
+        checkboxParent.append(checkBoxDiv);
+    }
+    const submitButton = document.createElement("button");
+    submitButton.textContent = "Submit flags";
+    submitButton.addEventListener("click", () => {
+        const flagContainers = [...checkboxParent.querySelectorAll("div.flag-container")];
+        if (flagContainers.length !== Object.keys(parsedFlags).length) {
+            throw new Error("Invalid keyset");
+        }
+        const keyObj = {};
+        for (const elm of flagContainers) {
+            const label = elm.querySelector("span.flag-label");
+            const checkbox = elm.querySelector("input.flag-checkbox");
+            if (!label || !checkbox) {
+                throw new Error("Missing flag elements");
+            }
+            keyObj[label.textContent] = checkbox.checked;
+        }
+        const newFlags = serializeFlags(keyObj);
+        API.editFlags(user, newFlags);
+    });
+    checkboxParent.append(submitButton);
+    dialog.close();
+    openDialog(checkboxParent);
+}
 const API = {
     submit: async function (scores, override) {
         const data = JSON.parse(scores);
@@ -136,23 +184,50 @@ const API = {
         });
         const parent = document.createElement("div");
         parent.classList.add("list-container");
-        function generateList(name, values) {
+        function generateList(name, values, flags) {
             const child = document.createElement("div");
             child.classList.add("list-elm");
             const nameSpan = document.createElement("span");
             nameSpan.textContent = name;
             nameSpan.classList.add("left-align");
+            const rightColumn = document.createElement("span");
+            rightColumn.classList.add("right-align");
             const valuesSpan = document.createElement("span");
-            valuesSpan.innerHTML = values.map(x => x.padStart(5).replaceAll(" ", "&nbsp;")).join(",");
-            valuesSpan.classList.add("right-align", "monospaced");
-            child.append(nameSpan, valuesSpan);
+            valuesSpan.innerHTML = values.map(x => x.padStart(5).replaceAll(" ", "&nbsp;")).join(" ");
+            valuesSpan.classList.add("monospaced");
+            //WIP
+            if (name !== "Names") {
+                const flagsButton = document.createElement("button");
+                flagsButton.classList.add("slim-button");
+                flagsButton.textContent = "Change user flags";
+                flagsButton.addEventListener("click", () => flagsDialog(name, flags));
+                rightColumn.append(valuesSpan, flagsButton);
+            }
+            else {
+                const placeholder = document.createElement("span");
+                placeholder.style.width = "84pt";
+                rightColumn.append(valuesSpan, placeholder);
+            }
+            child.append(nameSpan, rightColumn);
             return child;
         }
-        parent.appendChild(generateList("Names", ["dmnr", "pers", "judg", "polt", "real", "perc", "horn"]));
-        for (const { name, stats } of resp.extra.scores) {
-            parent.appendChild(generateList(name, stats.map(x => x.toFixed(1))));
+        parent.appendChild(generateList("Names", ["dmnr", "pers", "judg", "polt", "real", "perc", "horn"], 0));
+        for (const { name, stats, flags } of resp.extra.scores) {
+            parent.appendChild(generateList(name, stats.map(x => x.toFixed(1)), flags));
         }
         openDialog(parent);
+    },
+    editFlags: async function (name, flags) {
+        const resp = await JsonReq.post({ action: "editflags" }, { name, flags });
+        const div = document.createElement("div");
+        if (resp.action === "SUCCESS") {
+            div.innerText = `Edited flags for user ${name} sucessfully`;
+        }
+        else {
+            div.innerText = `Failed to edit flags for user ${name}`;
+        }
+        dialog.close();
+        openDialog(div);
     }
 };
 dialogClose.addEventListener("click", () => {
@@ -183,4 +258,3 @@ listButton.addEventListener("click", () => {
 clearButton.addEventListener("click", () => {
     jsonInput.value = "";
 });
-export {};

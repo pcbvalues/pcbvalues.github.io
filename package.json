@@ -1,6 +1,6 @@
 {
   "name": "pcbvalues.github.io",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "main": "index.html",
   "scripts": {
     "build": "tsc && sass ./src/scss/style.sass ./dist/style.css && tsx ./scripts/build.ts --parsedb",
@@ -9,7 +9,7 @@
     "sass-watch": "sass -w ./src/scss/style.sass ./dist/style.css",
     "tsc-watch": "tsc --watch",
     "score-server": "tsx ./scripts/server.ts",
-    "build-webui": "tsc -p ./scripts/webui-src/ && sass ./scripts/webui-src/style.scss ./scripts/static/style.css --no-source-map",
+    "build-webui": "tsx ./scripts/copy-common.ts && tsc -p ./scripts/webui-src/ && sass ./scripts/webui-src/style.scss ./scripts/static/style.css --no-source-map",
     "create-db": "sqlite3 ./db/scores.db \".read ./db/create-table.sql\"",
     "check-db": "sqlite3 ./db/scores.db \".read ./db/check-table.sql\"",
     "migrate-db": "sqlite3 ./db/scores.db \".read ./db/migrate-table.sql\""
@@ -19,18 +19,18 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.12.10",
+    "@types/node": "^20.14.13",
     "@types/pug": "^2.0.10",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "open": "^10.1.0",
-    "pug": "^3.0.2",
-    "sass": "^1.77.0",
+    "pug": "^3.0.3",
+    "sass": "^1.77.8",
     "sqlite": "^4.2.1",
     "sqlite3": "^5.1.7",
-    "terser": "^5.31.0",
-    "ts-jest": "^29.1.2",
-    "tsx": "^4.9.3",
-    "typescript": "^5.4.5"
+    "terser": "^5.31.3",
+    "ts-jest": "^29.2.4",
+    "tsx": "^4.16.5",
+    "typescript": "^5.5.4"
   }
 }

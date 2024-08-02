@@ -20,11 +20,12 @@ html
                         img(class=collumn src="./assets/values/" + val.icons[0])
                     a(href="#anchor" + (index+1))
                         img(class=collumn src="./assets/values/" + val.icons[1])
-        button(
-            class="button"
-            onclick="location.href='instructions.html';"
-            id="start-button"
-            ) Start the Test!
+        a(href="instructions.html" class="no-under")
+            button(
+                class="button"
+                id="start-button"
+                ) Start the Test!
+
         h2 There are 14 values
         div(class="expl-block")
             each val, index in config.values
@@ -52,4 +53,4 @@ html
             a(href="https://polcompballvalues.github.io/") Polcompballvalues V2 (Old Version of test)
 
 
-            
+

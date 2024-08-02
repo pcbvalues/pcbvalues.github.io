@@ -3,6 +3,7 @@ import type { Value, Score, ScoreTuple, CanvasParams } from "./types";
 
 declare global {
     var VERSION: string;
+    var DEFAULT_FLAGS: number;
 }
 
 /**

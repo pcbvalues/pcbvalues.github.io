@@ -1,4 +1,7 @@
 import type { APIActions, APIResponse, Score } from "./types.d.ts";
+import type { Flags } from "./common.js";
+import { parseFlags, serializeFlags } from "./common.js";
+
 const jsonInput = <HTMLTextAreaElement>document.getElementById("json-input")!;
 
 const submitButton = <HTMLButtonElement>document.getElementById("submit-button")!;
@@ -12,12 +15,26 @@ const dialog = <HTMLDialogElement>document.getElementById("dialog-popup")!;
 const dialogContents = <HTMLDivElement>document.getElementById("dialog-content")!;
 const dialogClose = <HTMLButtonElement>document.getElementById("dialog-close")!;
 
+declare global {
+    var activeUser: string | null;
+}
+
+globalThis.activeUser = null;
+
 class JsonReq {
     static async request(endpoint: string, params: Record<string, string>, options: RequestInit = {}): Promise<Response> {
+        const abortController = new AbortController();
+        const timeout = setTimeout(
+            () => abortController.abort(), 5000
+        );
+        options.signal = abortController.signal;
+
         const urlParams = new URLSearchParams(params);
         const finalUrl = `/${endpoint}?${urlParams}`;
 
         const resp = await fetch(finalUrl, options);
+
+        clearTimeout(timeout);
 
         const ctype = resp.headers.get("Content-Type");
         if (!ctype || !ctype.startsWith("application/json")) {
@@ -121,6 +138,65 @@ function confirmDialog(text: string): Promise<boolean> {
     });
 }
 
+function flagsDialog(user: string, flagBitField: number): void {
+    const checkboxParent = document.createElement("div");
+
+    const parsedFlags = parseFlags(flagBitField);
+
+    const header = document.createElement("h2");
+    header.innerText = `Editing flags for user: ${user}`;
+    checkboxParent.append(header);
+
+    for (const [key, val] of Object.entries(parsedFlags)) {
+        const checkBoxDiv = document.createElement("div");
+        checkBoxDiv.classList.add("flag-container");
+
+        const checkBoxLabel = document.createElement("span");
+        checkBoxLabel.classList.add("flag-label");
+        checkBoxLabel.textContent = key;
+
+        const checkBox = document.createElement("input");
+        checkBox.type = "checkbox";
+        checkBox.classList.add("flag-checkbox");
+        checkBox.checked = val;
+
+        checkBoxDiv.append(checkBoxLabel, checkBox);
+        checkboxParent.append(checkBoxDiv);
+    }
+
+    const submitButton = document.createElement("button");
+    submitButton.textContent = "Submit flags";
+    submitButton.addEventListener("click", () => {
+        const flagContainers = [...checkboxParent.querySelectorAll("div.flag-container")];
+
+        if (flagContainers.length !== Object.keys(parsedFlags).length) {
+            throw new Error("Invalid keyset");
+        }
+
+        const keyObj = {} as Record<Flags, boolean>;
+
+        for (const elm of flagContainers) {
+            const label = elm.querySelector<HTMLSpanElement>("span.flag-label");
+            const checkbox = elm.querySelector<HTMLInputElement>("input.flag-checkbox");
+
+            if (!label || !checkbox) {
+                throw new Error("Missing flag elements");
+            }
+
+            keyObj[label.textContent as Flags] = checkbox.checked;
+        }
+
+        const newFlags = serializeFlags(keyObj);
+
+        API.editFlags(user, newFlags);
+    });
+
+    checkboxParent.append(submitButton);
+
+    dialog.close();
+    openDialog(checkboxParent);
+}
+
 const API = {
     submit: async function (scores: string, override: boolean): Promise<void> {
         const data = JSON.parse(scores);
@@ -163,7 +239,7 @@ const API = {
                 throw new Error(resp.message);
         }
     },
-    list: async function () {
+    list: async function (): Promise<void> {
         const resp = await JsonReq.get<APIResponse<{ scores: Score[] }>>({
             action: "list"
         });
@@ -171,7 +247,7 @@ const API = {
         const parent = document.createElement("div");
         parent.classList.add("list-container");
 
-        function generateList(name: string, values: string[]): HTMLDivElement {
+        function generateList(name: string, values: string[], flags: number): HTMLDivElement {
             const child = document.createElement("div");
             child.classList.add("list-elm");
 
@@ -179,25 +255,57 @@ const API = {
             nameSpan.textContent = name;
             nameSpan.classList.add("left-align");
 
-            const valuesSpan = document.createElement("span");
-            valuesSpan.innerHTML = values.map(x => x.padStart(5).replaceAll(" ", "&nbsp;")).join(",");
-            valuesSpan.classList.add("right-align", "monospaced");
+            const rightColumn = document.createElement("span");
+            rightColumn.classList.add("right-align");
 
-            child.append(nameSpan, valuesSpan);
+            const valuesSpan = document.createElement("span");
+            valuesSpan.innerHTML = values.map(x => x.padStart(5).replaceAll(" ", "&nbsp;")).join(" ");
+            valuesSpan.classList.add("monospaced");
+
+            //WIP
+            if (name !== "Names") {
+                const flagsButton = document.createElement("button");
+                flagsButton.classList.add("slim-button");
+                flagsButton.textContent = "Change user flags";
+                flagsButton.addEventListener("click", () => flagsDialog(name, flags));
+
+                rightColumn.append(valuesSpan, flagsButton);
+            } else {
+                const placeholder = document.createElement("span");
+                placeholder.style.width = "84pt";
+                rightColumn.append(valuesSpan, placeholder);
+            }
+            child.append(nameSpan, rightColumn);
+
             return child;
         }
 
-        parent.appendChild(generateList("Names", ["dmnr", "pers", "judg", "polt", "real", "perc", "horn"]));
+        parent.appendChild(generateList("Names", ["dmnr", "pers", "judg", "polt", "real", "perc", "horn"], 0));
 
-        for (const { name, stats } of resp.extra.scores) {
+        for (const { name, stats, flags } of resp.extra.scores) {
             parent.appendChild(
                 generateList(
-                    name, stats.map(x => x.toFixed(1))
+                    name, stats.map(x => x.toFixed(1)), flags
                 )
             );
         }
 
         openDialog(parent);
+    },
+    editFlags: async function (name: string, flags: number) {
+        const resp = await JsonReq.post<APIResponse<void>>(
+            { action: "editflags" }, { name, flags }
+        );
+
+        const div = document.createElement("div");
+
+        if (resp.action === "SUCCESS") {
+            div.innerText = `Edited flags for user ${name} sucessfully`;
+        } else {
+            div.innerText = `Failed to edit flags for user ${name}`;
+        }
+        dialog.close();
+        openDialog(div);
     }
 }
 

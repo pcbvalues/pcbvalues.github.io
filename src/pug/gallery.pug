@@ -8,8 +8,14 @@ html
         br 
         canvas(id="banner")
         button(class="button" onclick="window.history.back()" id="back-button") Back
-        button(class="button" onclick="location.href='credits.html'" id="credits-button") Credits
-        script(type="application/javascript") globalThis.VERSION = "#{version}"
+
+        a(href="credits.html" class="no-under")
+            button(class="button" o id="credits-button") Credits
+
+        script(type="application/javascript").
+            globalThis.VERSION = "#{version}";
+            globalThis.DEFAULT_FLAGS = 0b0;
+
         if js
             script(type="module") !{js.gallery}
         else 

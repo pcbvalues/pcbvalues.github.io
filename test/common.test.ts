@@ -143,19 +143,32 @@ test("shuffleArray return value", () => {
         { b: 2 },
         { c: 3 },
         { d: 4 },
-        { f: 5 },
-        { g: 6 },
-        { h: 7 },
-        { i: 8 }
-    ];
+        { e: 5 },
+        { f: 6 },
+        { g: 7 },
+        { h: 8 }
+    ] as Record<string, number>[];
 
     const shuffled = shuffleArray(originalArray);
 
     expect(shuffled.length).toBe(originalArray.length);
 
+    let identical = 0;
+
     for (let i = 0; i < originalArray.length; i++) {
+        //Check if original array is untouched
+        expect(
+            originalArray[i][String.fromCharCode(0x61 + i)]
+        ).toBe(i + 1);
+        //Check if all elements are in the new array
         expect(shuffled).toContain(originalArray[i]);
+
+        if (originalArray[i] === shuffled[i]) {
+            identical++;
+        }
     }
+    //Checks if array is properly shuffled (less than 1/4 remain in original spots)
+    expect(identical).toBeLessThan(Math.floor(originalArray.length / 4));
 });
 
 test("Canvas tier finder", () => {

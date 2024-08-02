@@ -1,4 +1,4 @@
-import type { Value, CanvasParams, HeaderParams, Score, ScoreTuple, JsonTypes } from "./types";
+import type { Value, CanvasParams, HeaderParams, Score, ScoreTuple, JsonTypes } from "../../src/typescript/types.d.ts";
 
 /**
  * Promise that resolves as the Window load event is triggered.
@@ -127,18 +127,6 @@ export function serializeFlags(flagObj: Record<Flags, boolean>): number {
         flagInt = (flagInt | (flagObj[name as Flags] ? mask : 0));
     }
     return flagInt;
-}
-
-export function filterByFlag(flagObj: Record<Flags, boolean>, user: Score): boolean {
-    const userFlags = parseFlags(user.flags);
-
-    for (const [key, val] of Object.entries(flagObj)) {
-        if (val && !userFlags[key as Flags]) {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 /**

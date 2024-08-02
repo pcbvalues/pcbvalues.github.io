@@ -1,8 +1,13 @@
-import { getJson, Canvas, windowPromise, parseScores, currentTheme, parseUsers, orderScores } from "./common.js";
+import {
+    getJson, Canvas, windowPromise, parseScores,
+    currentTheme, parseUsers, orderScores, parseFlags,
+    filterByFlag
+} from "./common.js";
 import type { Value, Score, CanvasParams } from "./types";
 
 declare global {
     var VERSION: string;
+    var DEFAULT_FLAGS: number;
 }
 
 /**
@@ -18,7 +23,7 @@ function hideBar(outer: HTMLDivElement, side: "Left" | "Right"): void {
     outer.style[`borderBottom${side}Radius`] = "28pt";
     outer.style[`margin${side}`] = "4px";
 
-    const separator = outer.parentElement?.querySelector(".divider") as HTMLDivElement;
+    const separator = outer.parentElement?.querySelector<HTMLDivElement>(".divider");
     if (separator) {
         separator.style.display = "none";
     }
@@ -62,6 +67,10 @@ function addClosestMatches(users: Required<Score>[]): string {
 
     const otherMatches = document.getElementById("other-matches");
 
+    while (otherMatches?.children.length) {
+        otherMatches.removeChild(otherMatches.firstChild!);
+    }
+
     for (let i = 1; i < 5; i++) {
         const bias = (1 - users[i].bias) * 100;
 
@@ -98,6 +107,43 @@ async function drawScores(canvas: Canvas, values: Value[], scores: number[]): Pr
 
 
 /**
+ * Renders provided score
+ * @param canvas Instance of Canvas class to render onto
+ * @param flags Flags bitfield to filter scores through
+ * @param parsedScores Scores array
+ * @param users Total list of users to match against
+ * @param values Values to draw against
+ * @param short Short quiz or full
+ */
+function renderScores(
+    canvas: Canvas,
+    flags: number,
+    parsedScores: number[],
+    users: Score[],
+    values: Value[],
+    short: boolean
+): Promise<void> {
+    const parsedFlags = parseFlags(flags);
+    const filteredUsers = users.filter(x => filterByFlag(parsedFlags, x));
+    if (!filteredUsers.length) {
+        throw new Error("No users match the provided flags");
+    }
+
+    const sortedUsers = orderScores(parsedScores, filteredUsers);
+    const closestUser = addClosestMatches(sortedUsers);
+
+    canvas.clearFields();
+    canvas.drawHeader({
+        version: globalThis.VERSION,
+        edition: (short ? "Short" : "Full") + " Edition",
+        gallery: false,
+        user: closestUser,
+        basetext: "Taken"
+    });
+    return drawScores(canvas, values, parsedScores);
+}
+
+/**
  * Gets the requires values, initializes and mounts all the necessary events.
  */
 async function main() {
@@ -118,6 +164,7 @@ async function main() {
     }
 
     const parsedScores = parseScores(scores, values.length);
+    const short = edition.toLowerCase().startsWith("s");
 
     document.getElementById("submit-button")!.addEventListener("click", () => {
         const scoreStr = parsedScores.map(x => x.toFixed(1)).join(",");
@@ -132,10 +179,9 @@ async function main() {
         location.href = `submitter.html?${parsedParams}`;
     });
 
-    const sortedUsers = orderScores(parsedScores, users);
-    const closestUser = addClosestMatches(sortedUsers);
-
     const canvasElm = <HTMLCanvasElement>document.getElementById("banner");
+    const dialogElm = <HTMLDialogElement>document.getElementById("match-selection");
+    const closeBtn = <HTMLButtonElement>document.getElementById("match-close");
 
     const [fg, bg] = currentTheme() === "dark" ? ["#EEE", "#333"] : ["#333", "#EEE"];
 
@@ -146,21 +192,29 @@ async function main() {
         font: "Andika"
     };
 
-    const short = edition.toLowerCase().startsWith("s");
-
     const canvas = new Canvas(canvasElm, canvasParams);
-    canvas.drawHeader({
-        version: globalThis.VERSION,
-        edition: (short ? "Short" : "Full") + " Edition",
-        gallery: false,
-        user: closestUser,
-        basetext: "Taken"
-    });
-    await drawScores(canvas, values, parsedScores);
 
     document.getElementById("download-button")?.addEventListener("click", () => {
         Canvas.download(canvasElm);
     });
+
+    document.getElementById("match-change-button")?.addEventListener("click", () => {
+        dialogElm.showModal();
+    });
+
+    closeBtn.addEventListener("click", () => {
+        dialogElm.close();
+    });
+
+    dialogElm.addEventListener("click", ev => {
+
+    });
+
+    dialogElm.addEventListener("close", () => {
+
+    });
+
+    await renderScores(canvas, DEFAULT_FLAGS, parsedScores, users, values, short);
 }
 
 main().catch((err: Error) => {

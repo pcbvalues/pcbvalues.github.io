@@ -110,7 +110,7 @@ export class DataBase {
 
         try {
             await this.db.run(
-                "UPDATA scores SET flags=? WHERE name=?",
+                "UPDATE scores SET flags=? WHERE name=?",
                 [flags, encodeURIComponent(name)]
             );
         } catch (e: unknown) {

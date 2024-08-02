@@ -117,8 +117,7 @@ export async function editDBFlags(data: Buffer): Promise<string> {
     const { name, flags } = JSON.parse(userString) as SimpleScore;
 
     const db = await DataBase.load();
-
-    db.editFlags(name, flags);
+    await db.editFlags(name, flags);
 
     return JSON.stringify({
         action: APIActions[APIActions.SUCCESS],

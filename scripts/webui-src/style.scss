@@ -56,6 +56,11 @@ button {
     margin: 8px auto;
     background-color: var(--bg3);
     color: var(--fg2);
+    border: 4px solid var(--bg2);
+    border-radius: 8pt;
+    padding: 8px;
+    width: 40vw;
+    max-width: 280pt;
 }
 
 ::backdrop {
@@ -63,9 +68,20 @@ button {
 }
 
 dialog {
+    width: 80vw;
+    max-width: 800px;
+    min-width: 470px;
     background-color: var(--bg3);
     color: var(--fg2);
     max-height: 60vh;
+    border: 8px solid var(--bg2);
+    border-radius: 12pt;
+    padding: 12pt;
+}
+
+.list-elm>.left-align {
+    width: fit-content;
+    max-width: calc(100% - 300pt);
 }
 
 #dialog-close {
@@ -86,11 +102,17 @@ dialog {
 }
 
 .monospaced {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Fira Mono', 'Courier New', Courier, monospace;
 }
 
 .list-container {
-    max-width: 96%;
+    max-width: 98%;
+}
+
+.slim-button {
+    padding: 2px;
+    margin: 0 2px;
+    align-self: flex-end;
 }
 
 .list-elm {
@@ -105,6 +127,7 @@ dialog {
     .right-align {
         align-self: flex-end;
         text-align: end;
+        display: inline-flex;
     }
 
     .left-align {
