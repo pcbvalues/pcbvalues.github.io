@@ -3,8 +3,9 @@ import { parseScores } from "./common.js";
 type Animate = "success" | "failure";
 
 type APIResponse = {
-    success: boolean;
-    error?: string;
+    success?: boolean;
+    status?: number;
+    message?: string;
 };
 
 type LottiePlayer = HTMLElement & {
@@ -199,12 +200,7 @@ async function sendScores(body: string): Promise<void> {
     const params: RequestInit = {
         method: "POST",
         headers: {
-            //Correct Content-Type is application/json but
-            //000Webhost blocks the HTTP OPTIONS requests
-            //used for CORS preflight so a simple request
-            //is necessary, hence the text/plain mimetype
-            //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#simple_requests
-            "Content-Type": "text/plain"
+            "Content-Type": "application/json"
         },
         signal: controller.signal,
         body
@@ -217,7 +213,7 @@ async function sendScores(body: string): Promise<void> {
     const data = await res.json() as APIResponse;
 
     if (res.status > 299 || !data.success) {
-        throw new Error(`Failed to submit scores: ${data.error}`);
+        throw new Error(`Failed to submit scores: ${data.status}: ${data.message}`);
     }
 }
 

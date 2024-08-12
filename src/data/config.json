@@ -260,7 +260,7 @@
             ]
         }
     ],
-    "api_url": "https://pcbvalues.000webhostapp.com/api.php",
+    "api_url": "https://pcbvalues.pcbvalues.workers.dev/api/v3",
     "discord_url": "https://discord.gg/pyEZttNQYu",
     "wiki_url": "https://polcompball.wiki",
     "reddit_url": "https://www.reddit.com/r/Polcompball/",
