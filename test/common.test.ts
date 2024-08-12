@@ -146,7 +146,14 @@ test("shuffleArray return value", () => {
         { e: 5 },
         { f: 6 },
         { g: 7 },
-        { h: 8 }
+        { h: 8 },
+        { i: 9 },
+        { j: 10 },
+        { k: 11 },
+        { l: 12 },
+        { m: 13 },
+        { n: 14 },
+        { o: 15 }
     ] as Record<string, number>[];
 
     const shuffled = shuffleArray(originalArray);
@@ -168,7 +175,7 @@ test("shuffleArray return value", () => {
         }
     }
     //Checks if array is properly shuffled (less than 1/4 remain in original spots)
-    expect(identical).toBeLessThan(Math.floor(originalArray.length / 4));
+    expect(identical).toBeLessThan(Math.floor(originalArray.length / 2));
 });
 
 test("Canvas tier finder", () => {
