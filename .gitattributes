@@ -3,3 +3,9 @@
 *.cjs -linguist-detectable
 *.css -linguist-detectable
 *.sql -linguist-detectable
+/*.html linguist-generated=true
+/dist/* linguist-generated=true
+/scripts/static/*js linguist-generated=true
+/scripts/static/*css linguist-generated=true
+/scripts/keys.json linguist-generated=true
+/scripts/webui-src/common.ts linguist-generated=true

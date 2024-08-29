@@ -129,6 +129,18 @@ export function serializeFlags(flagObj: Record<Flags, boolean>): number {
     return flagInt;
 }
 
+export function filterByFlag(flagObj: Record<Flags, boolean>, user: Score): boolean {
+    const userFlags = parseFlags(user.flags);
+
+    for (const [key, val] of Object.entries(flagObj)) {
+        if (val && !userFlags[key as Flags]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 /**
  * Transforms user match tuple into
  * corresponding Score object

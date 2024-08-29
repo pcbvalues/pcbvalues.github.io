@@ -1,6 +1,6 @@
 {
   "name": "pcbvalues.github.io",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "main": "index.html",
   "scripts": {
     "build": "tsc && sass ./src/scss/style.sass ./dist/style.css && tsx ./scripts/build.ts --parsedb",
