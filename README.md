@@ -2,9 +2,9 @@
 
 ## What is PCBvalues
 [![Reddit](https://img.shields.io/badge/r%2FPolcompball-Reddit-%23FF4500?style=flat&logo=reddit)](https://www.reddit.com/r/Polcompball/)
-[![Wiki](https://img.shields.io/badge/Polcompball-Wiki-%230000?style=flat&logo=wikipedia)](https://polcompball.wiki)
+[![Wiki](https://img.shields.io/badge/Polcompball-Wiki-%230000?style=flat&logo=wikipedia)](https://polcompball.net/wiki/)
 [![Discord](https://img.shields.io/badge/Polcompball-Server-%235865F2?style=flat&logo=discord)
-](https://discord.gg/pyEZttNQYu)
+](https://discord.gg/JA3Qz5ZTX6)
 
 PCBvalues is a test for what kind of member of the political community you are and what camps you fall into. It is inspired by the personalities of the Polcompball community
 
