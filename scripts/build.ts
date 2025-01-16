@@ -2,7 +2,7 @@ import type { ValueKeys } from "./types.d.ts";
 import type { MinifyOptions } from "terser";
 import { promises as fs } from "fs";
 import { DataBase, scoreToScoreTuple, KEY_PATH } from "./lib/common-logic.ts";
-import { minifyAll, loadData, renderTemplates, writeJSON } from "./lib/build-logic.ts";
+import { minifyAll, loadData, renderTemplates, writeJSON, renderMarkdownTemplate } from "./lib/build-logic.ts";
 
 const buildParams = {
     jsDir: "./dist/",
@@ -10,6 +10,8 @@ const buildParams = {
     viewsDir: "./src/pug/",
     dataDir: "./src/data/",
     dataOutDir: "./dist/",
+    srcReadme: "./src/template_readme.md",
+    destReadme: "./README.md",
     minify: process.argv.some(x => x.toLowerCase() === "--minify"),
     pasedb: process.argv.some(x => x.toLowerCase() === "--parsedb"),
     terserParams: {
@@ -70,6 +72,7 @@ async function main(params: typeof buildParams): Promise<void> {
     };
 
     await renderTemplates(buildParams.viewsDir, dataConfig);
+    await renderMarkdownTemplate(buildParams.srcReadme, buildParams.destReadme, dataRecord.links, dataRecord.config);
     console.info("Templates rendered");
 
     await writeJSON(params.dataOutDir, keys, dataRecord);

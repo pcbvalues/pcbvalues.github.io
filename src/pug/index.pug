@@ -42,15 +42,33 @@ html
                         p(class="value")
                             b(style=`color: ${val.color[1]};`)=capitalize(val.labels[1])
                         p(class="expl-text-right")=val.desc[1]
+
+        p(class="extras")
+            a(href="./policy.html") Read our user and data privacy policy!
+
         h2 Community Links
         p(class="extras")
             a(href="./gallery.html") User Matches
         p(class="extras")
             a(href="./credits.html") Credits
-        p(class="extras") 
+        p(class="extras")
+            a(href=config.wiki_url) Polcompball Wiki
+        p(class="extras")
+            a(href=config.reddit_url) Polcompball Subreddit
+        p(class="extras")
+            a(href=config.discord_community_url) Polcompball Community Discord
+        p(class="extras")
+            a(href=config.discord_dev_id) PCBValues Discord
+        p(class="extras")
             a(href="https://polcompballvalues.github.io/legacy/") Polcompballvalues V1 (Original Version of test)
         p(class="extras")
             a(href="https://polcompballvalues.github.io/") Polcompballvalues V2 (Old Version of test)
+        iframe(
+            src=`https://discord.com/widget?id=${config.discord_dev_id}&theme=dark`
+            width="350" height="500" allowtransparency="true" frameborder="0" 
+            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+        )
+        
 
 
 

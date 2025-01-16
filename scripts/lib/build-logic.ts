@@ -1,4 +1,4 @@
-import type { ValueKeys, Question, RawQuestion, Value, JsonObjects } from "../types.d.ts";
+import type { ValueKeys, Question, RawQuestion, Value, JsonObjects, BadgesConfig } from "../types.d.ts";
 import { promises as fs } from "fs";
 import * as path from "path";
 import * as terser from "terser";
@@ -128,4 +128,19 @@ export async function writeJSON(outDir: string, keys: ValueKeys[], obj: JsonObje
                 break;
         }
     }
+}
+
+export async function renderMarkdownTemplate(
+    srcPath: string, destPath: string, badgeConfigs: BadgesConfig[],
+    config: JsonObjects["config"], replaceName = "{{{LINKS}}}"
+): Promise<void> {
+    const file = await fs.readFile(srcPath, { encoding: "utf-8" });
+
+    const badgeStrings = badgeConfigs.map(({ title, image, link }) =>
+        `[![${title}](${image})](${config[link]})`
+    ).join("\n");
+
+    const outputStr = file.replaceAll(replaceName, badgeStrings);
+
+    return fs.writeFile(destPath, outputStr, { encoding: "utf-8" });
 }

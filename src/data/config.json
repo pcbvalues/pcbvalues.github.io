@@ -1,4 +1,13 @@
 {
+    "api_url": "https://pcbvalues.pcbvalues.workers.dev/api/v3",
+    "discord_community_url": "https://discord.gg/JA3Qz5ZTX6",
+    "discord_dev_url": "https://discord.gg/YPMHWBDCR6",
+    "discord_dev_id": "1324378815350308887",
+    "wiki_url": "https://polcompball.wikitide.org",
+    "reddit_url": "https://www.reddit.com/r/Polcompball/",
+    "title": "PCBvalues",
+    "url": "pcbvalues.github.io",
+    "desc": "PCBvalues is a test for what kind of member of the political community you are and what camps you fall into.",
     "values": [
         {
             "name": "demeanor",
@@ -260,13 +269,6 @@
             ]
         }
     ],
-    "api_url": "https://pcbvalues.pcbvalues.workers.dev/api/v3",
-    "discord_url": "https://discord.gg/JA3Qz5ZTX6",
-    "wiki_url": "https://polcompball.net/wiki/",
-    "reddit_url": "https://www.reddit.com/r/Polcompball/",
-    "title": "PCBvalues",
-    "url": "pcbvalues.github.io",
-    "desc": "PCBvalues is a test for what kind of member of the political community you are and what camps you fall into.",
     "credits": [
         {
             "title": "Coding:",

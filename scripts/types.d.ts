@@ -31,12 +31,19 @@ type _ConfigCredits = {
     }[];
 };
 
-type _ConfigStrings = "api_url" | "discord_url" |
-    "wiki_url" | "reddit_url" | "title" | "url" | "desc";
+type _ConfigStrings = "api_url" | "discord_community_url" | "discord_dev_id" |
+    "discord_dev_url" | "wiki_url" | "reddit_url" | "title" | "url" | "desc";
+
+export type BadgesConfig = {
+    title: string;
+    image: string;
+    link: string;
+};
 
 export type JsonObjects = {
     users: ScoreTuple[];
     questions: RawQuestion[];
+    links: BadgesConfig[];
     config: {
         values: (Value & {
             key: ValueKeys,

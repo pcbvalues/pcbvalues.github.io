@@ -11,6 +11,9 @@ html
             input(for="text" id="name" name="name")
         button(class="button" id="send-button") Send
         button(class="button" onclick="window.history.back()" id="back-button") Back
+        p(class="extras")
+            a(href="./policy.html") 
+                | By submitting your scores, you're agreeing to our user and data privacy policy.
         script(type="application/javascript").
             globalThis.VERSION = "#{version}";
             globalThis.SIZE = #{size};

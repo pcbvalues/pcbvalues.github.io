@@ -1,0 +1,56 @@
+doctype html
+html
+    include includes/head
+    body
+        h1=config.title
+        h2 PCBValues policy
+
+        div(id="policy")
+            h3 User privacy
+            p
+                | We do not collect any information from users without their consent, albeit due to platform 
+                | integrations, such information might be collected by GitHub and Discord.
+
+            h3 Information stored locally by the quiz in the user's browser 
+            p
+                | Whenever a user completes the PCBValues quiz, a key/value pair is stored to the localStorage property, 
+                | this key is the SHA-512 hash of the user's results and the value is an ISO-8601 timestamp string of the 
+                | moment the scores were computed. When a user submits their scores via the built-in submitter another 
+                | key/value is set to remember the last successfully submitted score in order to avoid submitting repeated scores. 
+                | Neither of these values is ever sent to the PCBvalues team without direct user consent.
+
+            h3 User submissions
+            p
+                | When a user submits their scores, the following data is collected:
+            ul
+                li The username selected by the user (Under which their submission will appear).
+                li Their full scores in all values.
+                li The type of test taken (Full or Short).
+                li The version of the test currently being submitted.
+                li The SHA-512 hash in their URL's digest parameter.
+                li The timestamp associated with the SHA-512 hash in the user's localStorage.
+                li The number of timestamps in the user's localStorage (how many times the quiz has been taken).
+                li The timestamp of the time the user's score was registered in the API server.
+                li The user's browser's user agent string (for troubleshooting issues with other values and detecting spam).
+
+            p
+                | All of this data goes through a serverless backend running in Cloudflare's workers platform. 
+                | None of this data is stored in any database in Cloudflare's server, being that it is directly 
+                | formatted and sent to a Discord webhook, publicly available in the PCBValues server.
+
+            h3 Altering/Deleting submitted scores
+            p 
+                | If a user wishes to have to have their scores altered or removed from the system they may 
+                | join the PCBValues discord and contact with an element of the development team, they will 
+                | assess the validity of the request and take the necessary actions.
+
+            h3 Storing and selection of the submitted scores
+            p
+                | The scores submitted by the users are sent to the publicly available webhook in the PCBValues 
+                | Discord server, the PCBValues team analyses each score to determine their validity and according to 
+                | its perceived validity will add it to the SQLite database in the repository's db directory. 
+                | Whenever a new build of the test is prepared the quiz's automated build scripts will read all the 
+                | scores in the database and output them to a single JSON file called users.json, stored in the dist 
+                | directory. Due to the manual vetting process the submitted scores will not be visible right away, 
+                | only after a new build of the quiz is pushed to GitHub, containing updated scores, will their scores 
+                | go live and be available in the gallery and as a match on the results page.
