@@ -1,6 +1,6 @@
 {
   "name": "pcbvalues.github.io",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "main": "index.html",
   "scripts": {
     "build": "tsc && sass ./src/scss/style.sass ./dist/style.css && tsx ./scripts/build.ts --parsedb",
@@ -19,18 +19,28 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^20.17.12",
+    "@types/node": "^20.17.57",
     "@types/pug": "^2.0.10",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "open": "^10.1.0",
+    "open": "^10.1.2",
     "pug": "^3.0.3",
-    "sass": "^1.83.4",
+    "sass": "^1.89.1",
     "sqlite": "^4.2.1",
     "sqlite3": "^5.1.7",
-    "terser": "^5.37.0",
-    "ts-jest": "^29.2.5",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "terser": "^5.40.0",
+    "ts-jest": "^29.3.4",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild"
+    ],
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild"
+    ]
   }
 }
